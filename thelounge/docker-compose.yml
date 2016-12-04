@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  thelounge:
+    image: thelounge/lounge
+    networks:
+      back:
+        ipv4_address: 172.21.22.101
+  mysql:
+    image: mariadb:10
+    ports:
+    - "127.0.0.1:3306:3306"
+    volumes:
+    - /srv/docker/mysql:/var/lib/mysql
+    environment:
+    -  MYSQL_RANDOM_ROOT_PASSWORD=yes
+    networks:
+      back:
+        ipv4_address: 172.21.22.100
+
+networks:
+  front:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.21.0/24
+  back:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.22.0/24
