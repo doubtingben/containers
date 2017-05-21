@@ -10,12 +10,10 @@ BEEPING_TLSMODE="${BEEPING_TLSMODE:-false}"
 BEEPING_VALIDATETARGET="${BEEPING_VALIDATETARGET:-true}"
 
 BEEPING_TLSMODE_option=$([[ ${BEEPING_TLSMODE} == "true" ]] && echo "-tlsmode" || echo "")
-BEEPING_VALIDATETARGET_option=$([[ ${BEEPING_TLSMODE} == "true" ]] && echo "-validatetarget" || echo "")
 
 # run our command
 exec "$@" -geodatfile ${BEEPING_GEODATFILE} \
 	-instance ${BEEPING_INSTANCE} \
 	-listen ${BEEPING_LISTEN} \
 	-port ${BEEPING_PORT} \
-	${BEEPING_TLSMODE_option} \
-	${BEEPING_VALIDATETARGET_option}
+	${BEEPING_TLSMODE_option}
