@@ -1,5 +1,5 @@
 FROM alpine:latest
 
-COPY  support_files/data /data
+COPY  data /data
 
 VOLUME /data
