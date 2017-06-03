@@ -1,6 +1,5 @@
 FROM alpine:latest
 
-RUN mkdir -p /data/elasticsearch/5/conf
-COPY 
+COPY  support_files/data /data
 
 VOLUME /data
