@@ -1,0 +1,27 @@
+version: "2.2"
+services:
+
+  partiy:
+    image: parity/parity:stable
+    command: |
+      --base-path /data
+      --mode active
+      --auto-update all
+      --release-track stable
+      --port 30303
+      --pruning fast
+      --ui-port 8180
+      --ui-interface 0.0.0.0
+      --jsonrpc-port 8545
+      --jsonrpc-interface 0.0.0.0
+      --jsonrpc-hosts="all"
+      --dapps-port 8080
+      --dapps-interface 0.0.0.0
+    ports:
+      - "8180:8180"
+      - "30303:30303"
+      - "8545:8545"
+    volumes:
+      - /srv/parity:/data
+    cpu_count: 3
+    mem_limit: 4G
