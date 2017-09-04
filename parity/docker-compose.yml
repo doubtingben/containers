@@ -14,7 +14,9 @@ services:
       --ui-interface 0.0.0.0
       --jsonrpc-port 8545
       --jsonrpc-interface 0.0.0.0
-      --jsonrpc-hosts="all"
+      --jsonrpc-cors '*'
+      --geth
+      --jsonrpc-hosts all
       --dapps-port 8080
       --dapps-interface 0.0.0.0
     ports:
@@ -25,6 +27,32 @@ services:
       - /srv/parity:/data
     cpu_count: 3
     mem_limit: 4G
+
+  geth:
+    image: ethereum/client-go:stable
+    command: |
+      --datadir "/data"
+      --keystore "/keystore"
+      --syncmode light
+      --rpc
+      --rpcaddr 0.0.0.0
+      --rpccorsdomain "null"
+      --metrics
+    ports:
+      - "30304:30303"
+      - "8546:8545"
+    volumes:
+      - /srv/geth/data:/data
+      - /srv/geth/keystore:/keystore
+    cpu_count: 3
+    mem_limit: 4G
+
+  myetherwallet:
+    image: nginx:1.13
+    ports:
+      - "80:80"
+    volumes:
+      - ./myetherwallet/etherwallet:/usr/share/nginx/html:ro
 
   cadvisor:
     image: google/cadvisor
