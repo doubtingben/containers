@@ -1,43 +1,29 @@
-version: "2.2"
+version: "3"
 services:
 
   traefik:
     image: traefik:v1.4
     ports:
       - "80:80"
+      - "8080:8080"
+    labels:
+      traefik.enabled: "false"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: |
-      --docker true
-      --docker.domain "example.org"
-      --docker.exposedbydefault false
+      - ./traefik/traefik.toml:/traefik.toml
 
-  parity:
-    image: parity/parity:stable
-    command: |
-      --base-path /data
-      --mode active
-      --auto-update all
-      --release-track stable
-      --port 30303
-      --pruning fast
-      --ui-port 8180
-      --ui-interface 0.0.0.0
-      --jsonrpc-port 8545
-      --jsonrpc-interface 0.0.0.0
-      --jsonrpc-cors '*'
-      --geth
-      --jsonrpc-hosts all
-      --dapps-port 8080
-      --dapps-interface 0.0.0.0
-    ports:
-      - "8180:8180"
-      - "30303:30303"
-      - "8545:8545"
+  ipfs:
+    image: ipfs/go-ipfs:release
     volumes:
-      - /srv/parity:/data
-    cpu_count: 3
-    mem_limit: 4G
+      - /srv/ipfs/export:/export
+      - /srv/ipfs/data:/data/ipfs
+
+  ipfs-cluster:
+    image: ipfs/ipfs-cluster:v0.1.0
+    links:
+      -  ipfs
+    volumes:
+      - /srv/ipfs-cluster:/data/ipfs-cluster
 
   geth:
     image: ethereum/client-go:stable
@@ -49,39 +35,20 @@ services:
       --rpcaddr 0.0.0.0
       --rpccorsdomain "null"
       --metrics
-    ports:
-      - "30304:30303"
-      - "8546:8545"
     volumes:
       - /srv/geth/data:/data
       - /srv/geth/keystore:/keystore
-    cpu_count: 3
-    mem_limit: 4G
-
-  myetherwallet:
-    image: nginx:1.13
-    volumes:
-      - ./myetherwallet/etherwallet:/usr/share/nginx/html:ro
 
   cadvisor:
     image: google/cadvisor
-    ports:
-      - 8080:8080
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
 
-  prometheus-pushgateway:
-    image: prom/pushgateway
-    ports:
-      - 9091:9091
-
   prometheus-node-exporter:
     image: prom/node-exporter
-    ports:
-      - 9100:9100
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -95,19 +62,14 @@ services:
 
   prometheus-server:
     image: prom/prometheus
-    ports:
-      - 9090:9090
     links:
       - cadvisor
-      - prometheus-pushgateway
       - prometheus-node-exporter
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
   
   grafana:
     image: grafana/grafana
-    ports:
-      - 3000:3000
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=secret
     links:
