@@ -1,6 +1,8 @@
 FROM debian:jessie
 MAINTAINER Ben Wilson [doubtingben@gmail.com]
 
+LABEL version="1.0"
+
 RUN apt-get update && \
     apt-get install -y wget lsb-release locales && \
     wget -qO- https://pkg.tarsnap.com/tarsnap-deb-packaging-key.asc | apt-key add - && \
