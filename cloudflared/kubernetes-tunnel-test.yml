@@ -93,5 +93,5 @@ spec:
       volumes:
       - name: tunnel-secret
         secret:
-          secretName: yooser.xyz
+          secretName: argo.yooser.xyz
 ---
